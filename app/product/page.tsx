@@ -1,18 +1,19 @@
-import React from 'react'
-import Card from '@/components/card'
+import React from "react";
+import Card from "@/components/card";
 
 export default function ProductPage() {
   return (
-    <div>
-
-    <h1>Products</h1>
-    <div className='grid flex-1 grid-cols-3 items-start gap-4 p-4 2xl:grid-cols-4'>
-      {products.map((product) => (
-        <Card key={product.id} product={product} />
-      ))}
+    <div className="h-screen bg-gray-100 pt-20">
+      <h1 className="mb-10 text-center text-2xl font-bold">Products</h1>
+      <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
+        <div className="grid flex-1 grid-cols-3 items-start gap-4 p-4 2xl:grid-cols-4 items-center">
+          {products.map((product) => (
+            <Card key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
 const products = [

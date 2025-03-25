@@ -20,7 +20,7 @@ export function Signupform({
         <CardHeader>
           <CardTitle>Create an account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to create an account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -31,33 +31,20 @@ export function Signupform({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
                   required
                 />
               </div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
                 <Input id="password" type="password" required />
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
-                  Login
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
+                  Sign Up
                 </Button>
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
-              Have an account?{" "}
+              Already have an account?{" "}
               <a href="signin" className="underline underline-offset-4">
                 Sign In
               </a>

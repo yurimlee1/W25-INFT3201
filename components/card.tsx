@@ -27,7 +27,8 @@ const Card = ({ product }) => {
 
   return (
     <StyledWrapper>
-      <div className="card">
+      <div className="card rounded-lg">
+      {/* <div className="card"> */}
         <div className="card-img">
           <img
             src={product.imageUrl}
@@ -74,17 +75,17 @@ const Card = ({ product }) => {
 
 const StyledWrapper = styled.div`
   .card {
+    background: white;
     width: 190px;
     height: 254px;
     padding: 0.8em;
-    background: #f5f5f5;
     position: relative;
     overflow: visible;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
 
   .card-img {
-    background-color: #ffcaa6;
+    background-color: #6699ff;
     height: 40%;
     width: 100%;
     border-radius: 0.5rem;
@@ -139,8 +140,8 @@ const StyledWrapper = styled.div`
   }
 
   .card-button:hover {
-    border: 1px solid #ffcaa6;
-    background-color: #ffcaa6;
+    border: 1px solid #6699ff;
+    background-color: #6699ff;
   }
 `;
 
