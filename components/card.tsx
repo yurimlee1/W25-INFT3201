@@ -13,12 +13,18 @@ import {
 } from "@/components/ui/dialog";
 
 const Card = ({ product }) => {
-  // Truncate title if longer than 18 characters
-  const truncateTitle = (title: string) => {
-    return title.length > 20 ? title.substring(0, 18) + " ..." : title;
+  const addToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!cart.includes(product.productid)) {
+      cart.push(product.productid);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
   };
 
-  // Truncate description if longer than 29 characters
+  const truncateTitle = (name: string) => {
+    return name.length > 20 ? name.substring(0, 18) + " ..." : name;
+  };
+
   const truncateDescription = (description: string) => {
     return description.length > 50
       ? description.substring(0, 29) + " ..."
@@ -28,23 +34,20 @@ const Card = ({ product }) => {
   return (
     <StyledWrapper>
       <div className="card rounded-lg">
-      {/* <div className="card"> */}
         <div className="card-img">
           <img
             src={product.imageUrl}
-            alt={product.title}
+            alt={product.name}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="card-info">
-          <p className="text-title">{truncateTitle(product.title)}</p>
-          <p className="text-body">
-            {truncateDescription(product.description)}
-          </p>
+          <p className="text-title">{truncateTitle(product.name)}</p>
+          <p className="text-body">{truncateDescription(product.description)}</p>
         </div>
         <div className="card-footer">
-          <span className="text-title">${product.price.toFixed(2)}</span>
-          <div className="card-button">
+          <span className="text-title">${product.price}</span>
+          <div className="card-button" onClick={addToCart}>
             <Dialog>
               <DialogTrigger asChild>
                 <svg className="svg-icon" viewBox="0 0 20 20">
@@ -61,8 +64,13 @@ const Card = ({ product }) => {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
+<<<<<<< HEAD
                   <Button type="submit">Continue Shopping</Button>
                   <Button><a href="order">Go to my Order</a></Button>
+=======
+                  <Button type="button">Continue Shopping</Button>
+                  <Button type="button">Go to my Order</Button>
+>>>>>>> 71ac07582edeedbe5778ce34738fc7cf55d2f66d
                 </DialogFooter>
               </DialogContent>
             </Dialog>
