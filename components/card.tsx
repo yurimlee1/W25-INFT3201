@@ -13,12 +13,18 @@ import {
 } from "@/components/ui/dialog";
 
 const Card = ({ product }) => {
-  // Truncate title if longer than 18 characters
+  const addToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!cart.includes(product.productid)) {
+      cart.push(product.productid);
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  };
+
   const truncateTitle = (name: string) => {
     return name.length > 20 ? name.substring(0, 18) + " ..." : name;
   };
 
-  // Truncate description if longer than 29 characters
   const truncateDescription = (description: string) => {
     return description.length > 50
       ? description.substring(0, 29) + " ..."
@@ -28,7 +34,6 @@ const Card = ({ product }) => {
   return (
     <StyledWrapper>
       <div className="card rounded-lg">
-      {/* <div className="card"> */}
         <div className="card-img">
           <img
             src={product.imageUrl}
@@ -38,13 +43,11 @@ const Card = ({ product }) => {
         </div>
         <div className="card-info">
           <p className="text-title">{truncateTitle(product.name)}</p>
-          <p className="text-body">
-            {truncateDescription(product.description)}
-          </p>
+          <p className="text-body">{truncateDescription(product.description)}</p>
         </div>
         <div className="card-footer">
           <span className="text-title">${product.price}</span>
-          <div className="card-button">
+          <div className="card-button" onClick={addToCart}>
             <Dialog>
               <DialogTrigger asChild>
                 <svg className="svg-icon" viewBox="0 0 20 20">
@@ -61,8 +64,8 @@ const Card = ({ product }) => {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button type="submit">Continue Shopping</Button>
-                  <Button type="submit">Go to my Order</Button>
+                  <Button type="button">Continue Shopping</Button>
+                  <Button type="button">Go to my Order</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

@@ -1,4 +1,3 @@
-// components/admin-tab.tsx
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -80,7 +79,6 @@ export function AdminTab() {
     }
   };
 
-  // Updated handleAddProduct to use FormData so it can include a file.
   const handleAddProduct = async (event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);

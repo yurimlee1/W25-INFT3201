@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
       const fileName = `${Date.now()}-${imageFile.name}`;
       const imageDir = path.join(process.cwd(), 'public', 'image');
 
-      // Ensure the directory exists
       if (!fs.existsSync(imageDir)) {
         fs.mkdirSync(imageDir, { recursive: true });
       }
@@ -47,7 +46,6 @@ export async function POST(request: NextRequest) {
     }
 
     const client = await pool.connect();
-    // Wrap column names in double quotes to maintain case sensitivity
     const result = await client.query(
       `INSERT INTO Products 
       ("name", "category", "condition", "marketvalue", "price", "stockquantity", "locationid", "description", "imageUrl") 

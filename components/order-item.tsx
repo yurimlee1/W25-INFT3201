@@ -34,7 +34,7 @@ export const OrderItem = ({ product }) => {
               </span>
             </div>
             <div className="flex items-center space-x-4">
-              <p className="text-sm">${product.price.toFixed(2)}</p>
+              <p className="text-sm">${product.price}</p>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
