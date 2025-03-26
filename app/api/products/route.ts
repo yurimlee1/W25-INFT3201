@@ -5,7 +5,7 @@ import path from 'path';
 
 export async function GET() {
   try {
-    const client = await pool.connect();
+    const client = await pool.connect();// pool is db
     const result = await client.query('SELECT * FROM Products');
     client.release();
     return NextResponse.json(result.rows);

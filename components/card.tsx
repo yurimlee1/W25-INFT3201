@@ -64,13 +64,8 @@ const Card = ({ product }) => {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-<<<<<<< HEAD
                   <Button type="submit">Continue Shopping</Button>
                   <Button><a href="order">Go to my Order</a></Button>
-=======
-                  <Button type="button">Continue Shopping</Button>
-                  <Button type="button">Go to my Order</Button>
->>>>>>> 71ac07582edeedbe5778ce34738fc7cf55d2f66d
                 </DialogFooter>
               </DialogContent>
             </Dialog>
