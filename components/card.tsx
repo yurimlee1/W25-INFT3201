@@ -62,7 +62,7 @@ const Card = ({ product }) => {
                 </DialogHeader>
                 <DialogFooter>
                   <Button type="submit">Continue Shopping</Button>
-                  <Button type="submit">Go to my Order</Button>
+                  <Button><a href="order">Go to my Order</a></Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
