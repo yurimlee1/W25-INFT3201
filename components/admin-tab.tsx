@@ -2,11 +2,18 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface Product {
   productid: number;
@@ -17,6 +24,8 @@ interface Product {
   price: number;
   stockquantity: number;
   locationid: number;
+  description: string;
+  imageUrl: string;
 }
 
 interface Repair {
@@ -39,12 +48,12 @@ export function AdminTab() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products');
-      if (!response.ok) throw new Error('Failed to fetch products');
+      const response = await fetch("/api/products");
+      if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
       setProducts(data);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
@@ -52,46 +61,34 @@ export function AdminTab() {
 
   const fetchRepairs = async () => {
     try {
-      const response = await fetch('/api/repairs');
-      console.log("repaird data", response);
-      if (!response.ok) throw new Error('Failed to fetch repairs');
+      const response = await fetch("/api/repairs");
+      if (!response.ok) throw new Error("Failed to fetch repairs");
       const data = await response.json();
-      console.log("repaird data", data);
       setRepairs(data);
     } catch (error) {
-      console.error('Error fetching repairs:', error);
+      console.error("Error fetching repairs:", error);
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Failed to delete product');
-      setProducts(products.filter(product => product.productid !== id));
+      const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error("Failed to delete product");
+      setProducts(products.filter((product) => product.productid !== id));
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error("Error deleting product:", error);
     }
   };
 
+  // Updated handleAddProduct to use FormData so it can include a file.
   const handleAddProduct = async (event: any) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const data = {
-      name: formData.get("name"),
-      category: formData.get("category"),
-      condition: formData.get("condition"),
-      marketValue: Number(formData.get("marketValue")),
-      price: Number(formData.get("price")),
-      stockQuantity: Number(formData.get("stockQuantity")),
-      locationId: Number(formData.get("locationId")),
-    };
-
+    console.log("this is the form data", formData);
     const response = await fetch("/api/products", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: formData,
     });
-
     if (!response.ok) {
       console.error("Error:", await response.json());
     }
@@ -141,13 +138,26 @@ export function AdminTab() {
             ) : products.length === 0 ? (
               <p>No products available.</p>
             ) : (
-              products.map(product => (
-                <div key={product.productid} className="space-y-1 border p-2 rounded">
-                  <p><strong>Name:</strong> {product.name}</p>
-                  <p><strong>Category:</strong> {product.category}</p>
-                  <p><strong>Condition:</strong> {product.condition}</p>
-                  <p><strong>Price:</strong> ${product.price}</p>
-                  <p><strong>Stock:</strong> {product.stockquantity}</p>
+              products.map((product) => (
+                <div
+                  key={product.productid}
+                  className="space-y-1 border p-2 rounded"
+                >
+                  <p>
+                    <strong>Name:</strong> {product.name}
+                  </p>
+                  <p>
+                    <strong>Category:</strong> {product.category}
+                  </p>
+                  <p>
+                    <strong>Condition:</strong> {product.condition}
+                  </p>
+                  <p>
+                    <strong>Price:</strong> ${product.price}
+                  </p>
+                  <p>
+                    <strong>Stock:</strong> {product.stockquantity}
+                  </p>
                   <Button
                     variant="destructive"
                     size="sm"
@@ -168,21 +178,32 @@ export function AdminTab() {
         <Card>
           <CardHeader>
             <CardTitle>Repair Requests</CardTitle>
-            <CardDescription>
-              View all repair requests here.
-            </CardDescription>
+            <CardDescription>View all repair requests here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             {repairs.length === 0 ? (
               <p>No repair requests available.</p>
             ) : (
-              repairs.map(repair => (
-                <div key={repair.repairid} className="space-y-1 border p-2 rounded">
-                  <p><strong>Repair ID:</strong> {repair.repairid}</p>
-                  <p><strong>Customer:</strong> {repair.customername}</p>
-                  <p><strong>Product:</strong> {repair.productname}</p>
-                  <p><strong>Issue:</strong> {repair.issuedescription}</p>
-                  <p><strong>Status:</strong> {repair.repairstatus}</p>
+              repairs.map((repair) => (
+                <div
+                  key={repair.repairid}
+                  className="space-y-1 border p-2 rounded"
+                >
+                  <p>
+                    <strong>Repair ID:</strong> {repair.repairid}
+                  </p>
+                  <p>
+                    <strong>Customer:</strong> {repair.customername}
+                  </p>
+                  <p>
+                    <strong>Product:</strong> {repair.productname}
+                  </p>
+                  <p>
+                    <strong>Issue:</strong> {repair.issuedescription}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {repair.repairstatus}
+                  </p>
                 </div>
               ))
             )}
@@ -201,7 +222,11 @@ export function AdminTab() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <form onSubmit={handleAddProduct}>
+            <form
+              onSubmit={handleAddProduct}
+              encType="multipart/form-data"
+              className="space-y-4"
+            >
               <div className="space-y-1">
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" name="name" required />
@@ -216,7 +241,12 @@ export function AdminTab() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="marketvalue">Market Value</Label>
-                <Input id="marketvalue" name="marketvalue" type="number" required />
+                <Input
+                  id="marketvalue"
+                  name="marketvalue"
+                  type="number"
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="price">Price</Label>
@@ -224,13 +254,39 @@ export function AdminTab() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="stockQuantity">Stock Quantity</Label>
-                <Input id="stockQuantity" name="stockQuantity" type="number" required />
+                <Input
+                  id="stockQuantity"
+                  name="stockQuantity"
+                  type="number"
+                  required
+                />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="locationId">Location ID</Label>
-                <Input id="locationId" name="locationId" type="number" required />
+                <Input
+                  id="locationId"
+                  name="locationId"
+                  type="number"
+                  required
+                />
               </div>
-              <Button type="submit" className="mt-2">Add Product</Button>
+              <div className="space-y-1">
+                <Label htmlFor="description">Description</Label>
+                <Input id="description" name="description" required />
+              </div>
+              {/* New file input for the product image */}
+              <div className="space-y-1">
+                <Label htmlFor="imageUrl">Product Image</Label>
+                <Input
+                  id="imageUrl"
+                  name="imageUrl"
+                  type="file"
+                  accept="image/*"
+                />
+              </div>
+              <Button type="submit" className="mt-2">
+                Add Product
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -239,12 +295,10 @@ export function AdminTab() {
         <Card>
           <CardHeader>
             <CardTitle>Add Employees</CardTitle>
-            <CardDescription>
-              Add new employees here.
-            </CardDescription>
+            <CardDescription>Add new employees here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <form onSubmit={handleAddEmployee}>
+            <form onSubmit={handleAddEmployee} className="space-y-4">
               <div className="space-y-1">
                 <Label htmlFor="firstName">First Name</Label>
                 <Input id="firstName" name="firstName" required />
@@ -265,7 +319,9 @@ export function AdminTab() {
                 <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input id="phoneNumber" name="phoneNumber" />
               </div>
-              <Button type="submit" className="mt-2">Add Employee</Button>
+              <Button type="submit" className="mt-2">
+                Add Employee
+              </Button>
             </form>
           </CardContent>
         </Card>

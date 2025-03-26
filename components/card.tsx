@@ -14,8 +14,8 @@ import {
 
 const Card = ({ product }) => {
   // Truncate title if longer than 18 characters
-  const truncateTitle = (title: string) => {
-    return title.length > 20 ? title.substring(0, 18) + " ..." : title;
+  const truncateTitle = (name: string) => {
+    return name.length > 20 ? name.substring(0, 18) + " ..." : name;
   };
 
   // Truncate description if longer than 29 characters
@@ -32,18 +32,18 @@ const Card = ({ product }) => {
         <div className="card-img">
           <img
             src={product.imageUrl}
-            alt={product.title}
+            alt={product.name}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="card-info">
-          <p className="text-title">{truncateTitle(product.title)}</p>
+          <p className="text-title">{truncateTitle(product.name)}</p>
           <p className="text-body">
             {truncateDescription(product.description)}
           </p>
         </div>
         <div className="card-footer">
-          <span className="text-title">${product.price.toFixed(2)}</span>
+          <span className="text-title">${product.price}</span>
           <div className="card-button">
             <Dialog>
               <DialogTrigger asChild>
