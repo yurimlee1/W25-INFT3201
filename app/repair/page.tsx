@@ -60,7 +60,7 @@ export default function RepairPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6">
+    <div className="flex bg-gray-100 min-h-screen w-full items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-4">Submit Repair Request</h1>
         <form onSubmit={handleSubmit}>

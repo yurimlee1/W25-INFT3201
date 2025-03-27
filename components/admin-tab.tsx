@@ -170,12 +170,12 @@ export function AdminTab() {
 
   return (
     <Tabs defaultValue="inventory" className="w-[400px]">
-      <TabsList className="grid w-[400px] grid-cols-5">
+      <TabsList className="grid w-[400px] grid-cols-4">
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
         <TabsTrigger value="repair">Repair</TabsTrigger>
         <TabsTrigger value="employees">Employee</TabsTrigger>
         <TabsTrigger value="customers">Customer</TabsTrigger>
-        <TabsTrigger value={addTabStr}>Add</TabsTrigger>
+        {/* <TabsTrigger value={addTabStr}>Add</TabsTrigger> */}
         {/* <TabsTrigger value="add-product">Add Product</TabsTrigger>
         <TabsTrigger value="add-employee">Add Employee</TabsTrigger> */}
       </TabsList>
