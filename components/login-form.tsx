@@ -1,16 +1,12 @@
 'use client';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import {Card,CardContent,CardDescription,CardHeader,CardTitle,} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
+
+
 
 export function LoginForm({
   className,
@@ -25,33 +21,32 @@ export function LoginForm({
     event.preventDefault();
     setIsLoading(true);
     setError('');
-
+  
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password,}),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
-        throw new Error(data.message || 'An error occurred during login');
+        throw new Error(data.error || 'An error occurred during login');
       }
-
-      // Handle successful login (e.g., store tokens, redirect)
+  
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('username', data.user.username);
+  
       console.log('Login successful', data);
+  
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -77,12 +72,12 @@ export function LoginForm({
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
+                <Input
+                  id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
+                  required
                 />
               </div>
               <div className="flex flex-col gap-3">

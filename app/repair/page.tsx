@@ -4,6 +4,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 
 export default function RepairPage() {
   const [formData, setFormData] = useState({
@@ -106,20 +113,26 @@ export default function RepairPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="productId">Product</Label>
-            <select
-              id="productId"
-              name="productId"
+            <Select
               value={formData.productId}
-              onChange={handleChange}
-              required
+              onValueChange={(value) =>
+                setFormData({ ...formData, productId: value })
+              }
             >
-              <option value="">Select a product</option>
-              {products.map((product) => (
-                <option key={product.productid} value={product.productid}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a product" />
+              </SelectTrigger>
+              <SelectContent>
+                {products.map((product) => (
+                  <SelectItem
+                    key={product.productid}
+                    value={product.productid}
+                  >
+                    {product.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="issueDescription">Issue Description</Label>
@@ -131,7 +144,9 @@ export default function RepairPage() {
               required
             />
           </div>
-          <Button type="submit" className="mt-4">Submit Request</Button>
+          <Button type="submit" className="mt-4">
+            Submit Request
+          </Button>
         </form>
       </div>
     </div>

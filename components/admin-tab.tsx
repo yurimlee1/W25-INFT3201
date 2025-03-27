@@ -66,6 +66,8 @@ export function AdminTab() {
   useEffect(() => {
     fetchProducts();
     fetchRepairs();
+    fetchEmployees();
+    fetchCustomers();
   }, []);
 
   const handleToggle = () => {
@@ -118,6 +120,7 @@ export function AdminTab() {
       if (!response.ok) throw new Error("Failed to fetch customers");
       const data = await response.json();
       setCustomers(data);
+      console.log("this is the customers", data);
     } catch (error) {
       console.error("Error fetching customers:", error);
     }
