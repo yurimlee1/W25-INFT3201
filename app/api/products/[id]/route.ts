@@ -33,10 +33,22 @@ export async function DELETE(
     const awaitedParams = await Promise.resolve(context.params);
     const { id } = awaitedParams;
     const client = await pool.connect();
-    await client.query(
-      'DELETE FROM Products WHERE productid = $1',
+
+    const repairCheck = await client.query(
+      'SELECT COUNT(*) FROM Repairs WHERE productid = $1',
       [id]
     );
+    const repairCount = parseInt(repairCheck.rows[0].count, 10);
+
+    if (repairCount > 0) {
+      client.release();
+      return NextResponse.json(
+        { error: 'Cannot delete product with associated repair requests' },
+        { status: 400 }
+      );
+    }
+
+    await client.query('DELETE FROM Products WHERE productid = $1', [id]);
     client.release();
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
   } catch (error) {

@@ -4,6 +4,7 @@ import Card from "@/components/card";
 import { useEffect, useState } from "react";
 
 
+
 interface Product {
   productid: number;
   name: string;
@@ -50,6 +51,7 @@ export default function ProductPage() {
             <Card key={product.productid} product={product} />
           ))}
         </div>
+        
       </div>
     </div>
   );

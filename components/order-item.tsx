@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from "sonner";
 
 export const OrderItem = ({ product }) => {
   return (
@@ -6,13 +7,13 @@ export const OrderItem = ({ product }) => {
       <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
         <img
           src={product.imageUrl}
-          alt={product.title}
+          alt={product.name}
           className="w-full rounded-lg sm:w-40"
         />
         <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between">
           <div className="mt-5 sm:mt-0">
             <h2 className="text-lg font-bold text-gray-900">
-              {product.title}
+              {product.name}
             </h2>
             <p className="mt-1 text-xs text-gray-700">{product.description}</p>
           </div>
@@ -42,6 +43,16 @@ export const OrderItem = ({ product }) => {
                 strokeWidth="1.5"
                 stroke="currentColor"
                 className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
+                onClick={() => {
+                  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                  cart = cart.filter(item => item !== product.productid);
+                  localStorage.setItem('cart', JSON.stringify(cart));
+                  window.location.reload();
+
+                  toast.success("Product removed from cart");
+
+
+                }}
               >
                 <path
                   strokeLinecap="round"

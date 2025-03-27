@@ -11,6 +11,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { toast } from "sonner"
 
 export default function RepairPage() {
   const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ export default function RepairPage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    toast("Event has been created.")
+
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products');

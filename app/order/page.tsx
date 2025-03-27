@@ -1,6 +1,7 @@
 "use client";
 import { OrderItem } from "@/components/order-item";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function OrderPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -72,9 +73,9 @@ export default function OrderPage() {
                 <p className="text-sm text-gray-700">including TAX</p>
               </div>
             </div>
-            <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600">
-              Check out
-            </button>
+            <Button type="submit" className="w-full mt-6">
+            Check out
+            </Button>
           </div>
         </div>
       </div>
