@@ -31,3 +31,31 @@ export async function PATCH(
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
+  try {
+    const awaitedParams = await Promise.resolve(context.params);
+    const { id } = awaitedParams;
+    const client = await pool.connect();
+
+    const deleteResult = await client.query(
+      'DELETE FROM Repairs WHERE repairid = $1',
+      [id]
+    );
+
+    client.release();
+
+    if (deleteResult.rowCount === 0) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

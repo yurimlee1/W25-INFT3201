@@ -11,6 +11,12 @@ import { Switch } from "./ui/switch";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { toast } from "sonner";
 
+interface Location {
+  locationid: number;
+  name: string;
+  address: string;
+}
+
 interface Product {
   productid: number;
   name: string;
@@ -50,11 +56,12 @@ interface Employee {
   phonenumber: number;
 }
 
-export function AdminTab() {
+export function AdminTab({ onLocationAdded }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [isToggled, setIsToggled] = useState(false);
 
@@ -63,7 +70,27 @@ export function AdminTab() {
     fetchRepairs();
     fetchEmployees();
     fetchCustomers();
+    fetchLocations();
   }, []);
+
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch("/api/locations");
+      if (!response.ok) throw new Error("Failed to fetch locations");
+      const data = await response.json();
+      setLocations(data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      toast.error("Failed to fetch locations");
+    }
+  };
+
+  // Pass fetchLocations to AdminPage via onLocationAdded
+  useEffect(() => {
+    if (onLocationAdded) {
+      onLocationAdded(fetchLocations);
+    }
+  }, [onLocationAdded]);
 
   const fetchProducts = async () => {
     try {
@@ -119,7 +146,7 @@ export function AdminTab() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDeleteInventory = async (id: number) => {
     try {
       const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
       if (response.status === 400) {
@@ -133,6 +160,22 @@ export function AdminTab() {
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Failed to delete product");
+    }
+  };
+
+  const handleDeleteRepair = async (id: number) => {
+    try {
+      const response = await fetch(`/api/repairs/${id}`, { method: "DELETE" });
+      if (response.status === 400) {
+        const data = await response.json();
+        toast.error(data.error);
+        return;
+      }
+      if (!response.ok) throw new Error("Failed to delete Repair Req ");
+      toast.success("Repair Req deleted successfully");
+    } catch (error) {
+      console.error("Error deleting Repair Req :", error);
+      toast.error("Failed to delete Repair Req ");
     }
   };
 
@@ -187,8 +230,9 @@ export function AdminTab() {
       });
       if (!response.ok) throw new Error("Failed to add product");
       toast.success("Product added successfully");
-      event.target.reset(); 
-      fetchProducts(); 
+      event.target.reset();
+      fetchProducts();
+      fetchLocations(); // Refresh locations in case new ones were added
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Failed to add product");
@@ -213,8 +257,8 @@ export function AdminTab() {
       });
       if (!response.ok) throw new Error("Failed to add employee");
       toast.success("Employee added successfully");
-      event.target.reset(); 
-      fetchEmployees(); 
+      event.target.reset();
+      fetchEmployees();
     } catch (error) {
       console.error("Error adding employee:", error);
       toast.error("Failed to add employee");
@@ -246,10 +290,7 @@ export function AdminTab() {
                 <p>No products available.</p>
               ) : (
                 products.map((product) => (
-                  <div
-                    key={product.productid}
-                    className="space-y-1 border p-2 rounded"
-                  >
+                  <div key={product.productid} className="space-y-1 border p-2 rounded">
                     <p><strong>Name:</strong> {product.name}</p>
                     <p><strong>Category:</strong> {product.category}</p>
                     <p><strong>Condition:</strong> {product.condition}</p>
@@ -258,7 +299,7 @@ export function AdminTab() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleDelete(product.productid)}
+                      onClick={() => handleDeleteInventory(product.productid)}
                     >
                       Delete
                     </Button>
@@ -428,7 +469,7 @@ export function AdminTab() {
                   <div className="space-y-1">
                     <Label htmlFor="role">Role</Label>
                     <Select name="role" required>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
@@ -459,7 +500,7 @@ export function AdminTab() {
                   <div className="space-y-1">
                     <Label htmlFor="category">Category</Label>
                     <Select name="category" required>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -482,13 +523,27 @@ export function AdminTab() {
                     <Input id="stockQuantity" name="stockQuantity" type="number" required />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="locationId">Location ID</Label>
-                    <Input id="locationId" name="locationId" type="number" required />
+                    <Label htmlFor="locationId">Location</Label>
+                    <Select name="locationId" required>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locations.map((location) => (
+                          <SelectItem
+                            key={location.locationid}
+                            value={location.locationid.toString()}
+                          >
+                            {location.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="condition">Condition</Label>
                     <Select name="condition" required>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select Condition" />
                       </SelectTrigger>
                       <SelectContent>
