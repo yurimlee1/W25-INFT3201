@@ -12,6 +12,7 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 import { toast } from "sonner"
+import {nodemailer} from 'nodemailer';
 
 export default function RepairPage() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function RepairPage() {
     productId: '',
     issueDescription: '',
   });
+
 
   const [products, setProducts] = useState([]);
 
@@ -45,6 +47,34 @@ export default function RepairPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
+  async function handleemailsend(event, subject:any, text:any) {
+    event.preventDefault();
+  
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: subject,  // Email subject
+          text: text,        // Email body
+        }),
+      });
+  
+      if (response.ok) {
+        console.log('Email sent successfully');
+      } else {
+        console.error('Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -54,7 +84,7 @@ export default function RepairPage() {
         body: JSON.stringify(formData),
       });
       if (!response.ok) throw new Error('Failed to submit repair request');
-      alert('Repair request submitted successfully');
+      toast.success('Repair request submitted successfully');
       setFormData({
         firstName: '',
         lastName: '',
@@ -63,16 +93,22 @@ export default function RepairPage() {
         productId: '',
         issueDescription: '',
       });
+
+      handleemailsend(e, "Repair Request", `Repair request submitted successfully for ${formData.firstName} ${formData.lastName} with email ${formData.email} and phone number ${formData.phoneNumber}. Product ID: ${formData.productId}. Issue Description: ${formData.issueDescription}`);
+      toast.success('Email sent successfully');
+
     } catch (error) {
       console.error('Error submitting repair request:', error);
-      alert('Failed to submit repair request');
+      toast.error('Error submitting repair request');
     }
   };
 
   return (
+    
     <div className="flex bg-gray-100 min-h-screen w-full items-center justify-center p-6">
       <div className="w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-4">Submit Repair Request</h1>
+        
         <form onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="firstName">First Name</Label>
@@ -129,7 +165,7 @@ export default function RepairPage() {
                 {products.map((product) => (
                   <SelectItem
                     key={product.productid}
-                    value={product.productid}
+                    value={product.productid.toString()}
                   >
                     {product.name}
                   </SelectItem>

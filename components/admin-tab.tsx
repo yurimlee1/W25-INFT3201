@@ -187,8 +187,8 @@ export function AdminTab() {
       });
       if (!response.ok) throw new Error("Failed to add product");
       toast.success("Product added successfully");
-      event.target.reset(); // Reset the form
-      fetchProducts(); // Refresh the product list
+      event.target.reset(); 
+      fetchProducts(); 
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Failed to add product");
@@ -213,8 +213,8 @@ export function AdminTab() {
       });
       if (!response.ok) throw new Error("Failed to add employee");
       toast.success("Employee added successfully");
-      event.target.reset(); // Reset the form
-      fetchEmployees(); // Refresh the employee list
+      event.target.reset(); 
+      fetchEmployees(); 
     } catch (error) {
       console.error("Error adding employee:", error);
       toast.error("Failed to add employee");
