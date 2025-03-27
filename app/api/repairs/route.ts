@@ -5,23 +5,17 @@ export async function GET() {
   try {
     const client = await pool.connect();
     const result = await client.query(`
-      SELECT 
-        r.repairid,
-        c.firstname || ' ' || c.lastname AS customername,
-        p.name AS productname,
-        r.issuedescription,
-        r.repairstatus
-      FROM Repairs r
-      JOIN Customers c ON r.customerid = c.customerid
-      JOIN Products p ON r.productid = p.productid
+      SELECT repairid, customerid, productid, issuedescription, repairstatus, employeeid
+      FROM Repairs
     `);
     client.release();
-    return NextResponse.json(result.rows); 
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching repairs:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 
 
 export async function POST(request: NextRequest) {

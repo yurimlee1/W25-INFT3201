@@ -1,20 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
 import { Switch } from "./ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, } from '@/components/ui/select';
 
 interface Product {
   productid: number;
@@ -31,11 +25,13 @@ interface Product {
 
 interface Repair {
   repairid: number;
-  customername: string;
-  productname: string;
+  customerid: number;
+  productid: number;
   issuedescription: string;
   repairstatus: string;
+  assignedEmployeeId?: number;
 }
+
 
 interface Customer {
   customerid: number;
@@ -75,7 +71,7 @@ export function AdminTab() {
   };
 
   if (isToggled) {
-    console.log("string: ",addTabStr);
+    console.log("string: ", addTabStr);
     addTabStr = 'add-employee';
   }
 
@@ -120,7 +116,6 @@ export function AdminTab() {
       if (!response.ok) throw new Error("Failed to fetch customers");
       const data = await response.json();
       setCustomers(data);
-      console.log("this is the customers", data);
     } catch (error) {
       console.error("Error fetching customers:", error);
     }
@@ -135,6 +130,50 @@ export function AdminTab() {
       console.error("Error deleting product:", error);
     }
   };
+
+  const handleStatusChange = async (repairId: number, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/repairs/${repairId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repairstatus: newStatus }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update repair status");
+      }
+      const updatedRepair = await response.json();
+      setRepairs((prev) =>
+        prev.map((r) => (r.repairid === repairId ? updatedRepair : r))
+      );
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
+
+  const handleAssignEmployee = async (repairId: number, employeeId: string) => {
+    try {
+      const response = await fetch(`/api/repairs/${repairId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repairstatus: repairs.find(r => r.repairid === repairId)?.repairstatus,
+          assignedEmployeeId: parseInt(employeeId, 10),
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to assign employee");
+      }
+      const updatedRepair = await response.json();
+      setRepairs((prev) =>
+        prev.map((r) => (r.repairid === repairId ? updatedRepair : r))
+      );
+    } catch (error) {
+      console.error("Error assigning employee:", error);
+    }
+  };
+
+
 
   const handleAddProduct = async (event: any) => {
     event.preventDefault();
@@ -172,6 +211,7 @@ export function AdminTab() {
   };
 
   return (
+
     <Tabs defaultValue="inventory" className="w-[400px]">
       <TabsList className="grid w-[400px] grid-cols-4">
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -238,35 +278,76 @@ export function AdminTab() {
         <Card>
           <CardHeader>
             <CardTitle>Repair Requests</CardTitle>
-            <CardDescription>View all repair requests here.</CardDescription>
+            <CardDescription>View and manage repair requests here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <ScrollArea className="h-70 w-full">
               {repairs.length === 0 ? (
                 <p>No repair requests available.</p>
               ) : (
-                repairs.map((repair) => (
-                  <div
-                    key={repair.repairid}
-                    className="space-y-1 border p-2 rounded"
-                  >
-                    <p>
-                      <strong>Repair ID:</strong> {repair.repairid}
-                    </p>
-                    <p>
-                      <strong>Customer:</strong> {repair.customername}
-                    </p>
-                    <p>
-                      <strong>Product:</strong> {repair.productname}
-                    </p>
-                    <p>
-                      <strong>Issue:</strong> {repair.issuedescription}
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {repair.repairstatus}
-                    </p>
-                  </div>
-                ))
+                repairs.map((repair) => {
+                  const customer = customers.find(c => c.customerid === repair.customerid);
+                  const product = products.find(p => p.productid === repair.productid);
+
+                  return (
+                    <div key={repair.repairid} className="space-y-2 border p-2 rounded">
+                      <p>
+                        <strong>Repair ID:</strong> {repair.repairid}
+                      </p>
+                      <p>
+                        <strong>Customer:</strong> {customer ? `${customer.firstname} ${customer.lastname}` : 'Unknown'}
+                      </p>
+                      <p>
+                        <strong>Product:</strong> {product ? product.name : 'Unknown'}
+                      </p>
+                      <p>
+                        <strong>Issue:</strong> {repair.issuedescription}
+                      </p>
+                      {/* Status Select */}
+                      <div className="flex flex-col gap-1">
+                        <strong>Status:</strong>
+                        <Select
+                          value={repair.repairstatus}
+                          onValueChange={(value) => handleStatusChange(repair.repairid, value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {/* Employee Select */}
+                      <div className="flex flex-col gap-1">
+                        <strong>Assign Employee:</strong>
+                        <Select
+                          value={repair.assignedEmployeeId?.toString() || ""}
+                          onValueChange={(value) =>
+                            handleAssignEmployee(repair.repairid, value)
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select employee" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {employees.map((employee) => (
+                              <SelectItem
+                                key={employee.employeeid}
+                                value={employee.employeeid.toString()}
+                              >
+                                {employee.firstname} {employee.lastname}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )
+                })
+
               )}
             </ScrollArea>
           </CardContent>
@@ -275,6 +356,7 @@ export function AdminTab() {
           </CardFooter>
         </Card>
       </TabsContent>
+
       <TabsContent value="employees">
         <Card>
           <CardHeader>
@@ -362,18 +444,18 @@ export function AdminTab() {
       <TabsContent value="add-product">
         <Card>
           <CardHeader className="flex flex-col">
-          <div className="flex items-center justify-between">
-            <CardTitle>
-              Add Products
-            </CardTitle>
-            <div className="flex items-center pl-30 space-x-2">
-                <Switch 
-                  id="add-tab" 
+            <div className="flex items-center justify-between">
+              <CardTitle>
+                Add Products
+              </CardTitle>
+              <div className="flex items-center pl-30 space-x-2">
+                <Switch
+                  id="add-tab"
                   // checked={isToggled} // Bind the switch to the state
                   onChange={handleToggle}
                 /> <span />
                 <Label htmlFor="add-employees">Employees</Label>
-            </div>
+              </div>
             </div>
             <CardDescription>
               Add a new product to the inventory.
