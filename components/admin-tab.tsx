@@ -1,14 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
 import { Switch } from "./ui/switch";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, } from '@/components/ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 interface Product {
   productid: number;
@@ -31,7 +31,6 @@ interface Repair {
   repairstatus: string;
   assignedEmployeeId?: number;
 }
-
 
 interface Customer {
   customerid: number;
@@ -150,7 +149,6 @@ export function AdminTab() {
     }
   };
 
-
   const handleAssignEmployee = async (repairId: number, employeeId: string) => {
     try {
       const response = await fetch(`/api/repairs/${repairId}`, {
@@ -172,8 +170,6 @@ export function AdminTab() {
       console.error("Error assigning employee:", error);
     }
   };
-
-
 
   const handleAddProduct = async (event: any) => {
     event.preventDefault();
@@ -211,16 +207,13 @@ export function AdminTab() {
   };
 
   return (
-
-    <Tabs defaultValue="inventory" className="w-[400px]">
-      <TabsList className="grid w-[400px] grid-cols-4">
+    <Tabs defaultValue="inventory" className="w-full">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
         <TabsTrigger value="repair">Repair</TabsTrigger>
         <TabsTrigger value="employees">Employee</TabsTrigger>
         <TabsTrigger value="customers">Customer</TabsTrigger>
-        {/* <TabsTrigger value={addTabStr}>Add</TabsTrigger> */}
-        {/* <TabsTrigger value="add-product">Add Product</TabsTrigger>
-        <TabsTrigger value="add-employee">Add Employee</TabsTrigger> */}
+        <TabsTrigger value="add">Add</TabsTrigger>
       </TabsList>
       <TabsContent value="inventory">
         <Card>
@@ -231,7 +224,7 @@ export function AdminTab() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <ScrollArea className="h-70 w-full">
+            <ScrollArea className="h-[500px] w-full">
               {loading ? (
                 <p>Loading products...</p>
               ) : products.length === 0 ? (
@@ -242,21 +235,11 @@ export function AdminTab() {
                     key={product.productid}
                     className="space-y-1 border p-2 rounded"
                   >
-                    <p>
-                      <strong>Name:</strong> {product.name}
-                    </p>
-                    <p>
-                      <strong>Category:</strong> {product.category}
-                    </p>
-                    <p>
-                      <strong>Condition:</strong> {product.condition}
-                    </p>
-                    <p>
-                      <strong>Price:</strong> ${product.price}
-                    </p>
-                    <p>
-                      <strong>Stock:</strong> {product.stockquantity}
-                    </p>
+                    <p><strong>Name:</strong> {product.name}</p>
+                    <p><strong>Category:</strong> {product.category}</p>
+                    <p><strong>Condition:</strong> {product.condition}</p>
+                    <p><strong>Price:</strong> ${product.price}</p>
+                    <p><strong>Stock:</strong> {product.stockquantity}</p>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -281,29 +264,19 @@ export function AdminTab() {
             <CardDescription>View and manage repair requests here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <ScrollArea className="h-70 w-full">
+            <ScrollArea className="h-[500px] w-full">
               {repairs.length === 0 ? (
                 <p>No repair requests available.</p>
               ) : (
                 repairs.map((repair) => {
                   const customer = customers.find(c => c.customerid === repair.customerid);
                   const product = products.find(p => p.productid === repair.productid);
-
                   return (
                     <div key={repair.repairid} className="space-y-2 border p-2 rounded">
-                      <p>
-                        <strong>Repair ID:</strong> {repair.repairid}
-                      </p>
-                      <p>
-                        <strong>Customer:</strong> {customer ? `${customer.firstname} ${customer.lastname}` : 'Unknown'}
-                      </p>
-                      <p>
-                        <strong>Product:</strong> {product ? product.name : 'Unknown'}
-                      </p>
-                      <p>
-                        <strong>Issue:</strong> {repair.issuedescription}
-                      </p>
-                      {/* Status Select */}
+                      <p><strong>Repair ID:</strong> {repair.repairid}</p>
+                      <p><strong>Customer:</strong> {customer ? `${customer.firstname} ${customer.lastname}` : 'Unknown'}</p>
+                      <p><strong>Product:</strong> {product ? product.name : 'Unknown'}</p>
+                      <p><strong>Issue:</strong> {repair.issuedescription}</p>
                       <div className="flex flex-col gap-1">
                         <strong>Status:</strong>
                         <Select
@@ -320,14 +293,11 @@ export function AdminTab() {
                           </SelectContent>
                         </Select>
                       </div>
-                      {/* Employee Select */}
                       <div className="flex flex-col gap-1">
                         <strong>Assign Employee:</strong>
                         <Select
                           value={repair.assignedEmployeeId?.toString() || ""}
-                          onValueChange={(value) =>
-                            handleAssignEmployee(repair.repairid, value)
-                          }
+                          onValueChange={(value) => handleAssignEmployee(repair.repairid, value)}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select employee" />
@@ -345,9 +315,8 @@ export function AdminTab() {
                         </Select>
                       </div>
                     </div>
-                  )
+                  );
                 })
-
               )}
             </ScrollArea>
           </CardContent>
@@ -356,41 +325,24 @@ export function AdminTab() {
           </CardFooter>
         </Card>
       </TabsContent>
-
       <TabsContent value="employees">
         <Card>
           <CardHeader>
             <CardTitle>Employee Management</CardTitle>
-            <CardDescription>
-              View all employee information here.
-            </CardDescription>
+            <CardDescription>View all employee information here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <ScrollArea className="h-70 w-full">
+            <ScrollArea className="h-[500px] w-full">
               {employees.length === 0 ? (
                 <p>No employee information available.</p>
               ) : (
                 employees.map((employee) => (
-                  <div
-                    key={employee.employeeid}
-                    className="space-y-1 border p-2 rounded"
-                  >
-                    <p>
-                      <strong>Employee ID:</strong> {employee.employeeid}
-                    </p>
-                    <p>
-                      <strong>Name:</strong> {employee.firstname}{" "}
-                      {employee.lastname}
-                    </p>
-                    <p>
-                      <strong>Role:</strong> {employee.role}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {employee.email}
-                    </p>
-                    <p>
-                      <strong>Phone Number:</strong> {employee.phonenumber}
-                    </p>
+                  <div key={employee.employeeid} className="space-y-1 border p-2 rounded">
+                    <p><strong>Employee ID:</strong> {employee.employeeid}</p>
+                    <p><strong>Name:</strong> {employee.firstname} {employee.lastname}</p>
+                    <p><strong>Role:</strong> {employee.role}</p>
+                    <p><strong>Email:</strong> {employee.email}</p>
+                    <p><strong>Phone Number:</strong> {employee.phonenumber}</p>
                   </div>
                 ))
               )}
@@ -405,32 +357,19 @@ export function AdminTab() {
         <Card>
           <CardHeader>
             <CardTitle>Customer Management</CardTitle>
-            <CardDescription>
-              View all customer information here.
-            </CardDescription>
+            <CardDescription>View all customer information here.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <ScrollArea className="h-70 w-full">
+            <ScrollArea className="h-[500px] w-full">
               {customers.length === 0 ? (
                 <p>No customer information available.</p>
               ) : (
                 customers.map((customer) => (
-                  <div
-                    key={customer.customerid}
-                    className="space-y-1 border p-2 rounded"
-                  >
-                    <p>
-                      <strong>Customer ID:</strong> {customer.customerid}
-                    </p>
-                    <p>
-                      <strong>Name:</strong> {customer.firstname} {customer.lastname}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {customer.email}
-                    </p>
-                    <p>
-                      <strong>Phone Number:</strong> {customer.phonenumber}
-                    </p>
+                  <div key={customer.customerid} className="space-y-1 border p-2 rounded">
+                    <p><strong>Customer ID:</strong> {customer.customerid}</p>
+                    <p><strong>Name:</strong> {customer.firstname} {customer.lastname}</p>
+                    <p><strong>Email:</strong> {customer.email}</p>
+                    <p><strong>Phone Number:</strong> {customer.phonenumber}</p>
                   </div>
                 ))
               )}
@@ -445,29 +384,17 @@ export function AdminTab() {
         <Card>
           <CardHeader className="flex flex-col">
             <div className="flex items-center justify-between">
-              <CardTitle>
-                Add Products
-              </CardTitle>
+              <CardTitle>Add Products</CardTitle>
               <div className="flex items-center pl-30 space-x-2">
-                <Switch
-                  id="add-tab"
-                  // checked={isToggled} // Bind the switch to the state
-                  onChange={handleToggle}
-                /> <span />
+                <Switch id="add-tab" onChange={handleToggle} /> <span />
                 <Label htmlFor="add-employees">Employees</Label>
               </div>
             </div>
-            <CardDescription>
-              Add a new product to the inventory.
-            </CardDescription>
+            <CardDescription>Add a new product to the inventory.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <form
-              onSubmit={handleAddProduct}
-              encType="multipart/form-data"
-              className="space-y-4"
-            >
-              <ScrollArea className="h-70 w-full">
+            <form onSubmit={handleAddProduct} encType="multipart/form-data" className="space-y-4">
+              <ScrollArea className="h-[500px] w-full">
                 <div className="space-y-1">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" name="name" required />
@@ -482,12 +409,7 @@ export function AdminTab() {
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="marketvalue">Market Value</Label>
-                  <Input
-                    id="marketvalue"
-                    name="marketvalue"
-                    type="number"
-                    required
-                  />
+                  <Input id="marketvalue" name="marketvalue" type="number" required />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="price">Price</Label>
@@ -495,40 +417,22 @@ export function AdminTab() {
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="stockQuantity">Stock Quantity</Label>
-                  <Input
-                    id="stockQuantity"
-                    name="stockQuantity"
-                    type="number"
-                    required
-                  />
+                  <Input id="stockQuantity" name="stockQuantity" type="number" required />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="locationId">Location ID</Label>
-                  <Input
-                    id="locationId"
-                    name="locationId"
-                    type="number"
-                    required
-                  />
+                  <Input id="locationId" name="locationId" type="number" required />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="description">Description</Label>
                   <Input id="description" name="description" required />
                 </div>
-                {/* New file input for the product image */}
                 <div className="space-y-1">
                   <Label htmlFor="imageUrl">Product Image</Label>
-                  <Input
-                    id="imageUrl"
-                    name="imageUrl"
-                    type="file"
-                    accept="image/*"
-                  />
+                  <Input id="imageUrl" name="imageUrl" type="file" accept="image/*" />
                 </div>
               </ScrollArea>
-              <Button type="submit" className="mt-2">
-                Add Product
-              </Button>
+              <Button type="submit" className="mt-2">Add Product</Button>
             </form>
           </CardContent>
         </Card>
@@ -561,13 +465,133 @@ export function AdminTab() {
                 <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input id="phoneNumber" name="phoneNumber" />
               </div>
-              <Button type="submit" className="mt-2">
-                Add Employee
-              </Button>
+              <Button type="submit" className="mt-2">Add Employee</Button>
             </form>
           </CardContent>
         </Card>
       </TabsContent>
+
+      <TabsContent value="add">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>{isToggled ? "Add Employee" : "Add Product"}</CardTitle>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="add-tab"
+                  checked={isToggled}
+                  onCheckedChange={setIsToggled}
+                />
+                <Label htmlFor="add-tab">Employees</Label>
+              </div>
+            </div>
+            <CardDescription>
+              {isToggled ? "Add a new employee." : "Add a new product to the inventory."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 ">
+            {isToggled ? (
+              <form onSubmit={handleAddEmployee} className="space-y-4 ">
+                <ScrollArea className="h-[500px] w-full">
+                  <div className="space-y-1">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input id="firstName" name="firstName" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input id="lastName" name="lastName" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="role">Role</Label>
+                    <Select name="role" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Manager">Manager</SelectItem>
+                        <SelectItem value="Sales">Sales</SelectItem>
+                        <SelectItem value="Technician">Technician</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" type="email" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input id="phoneNumber" name="phoneNumber" />
+                  </div>
+                </ScrollArea>
+                <Button type="submit" className="mt-2">Add Employee</Button>
+              </form>
+
+            ) : (
+              <form onSubmit={handleAddProduct} encType="multipart/form-data" className="space-y-4">
+                <ScrollArea className="h-[500px] w-full">
+                  <div className="space-y-1">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" name="name" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="category">Category</Label>
+                    <Select name="category" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Game">Game</SelectItem>
+                        <SelectItem value="Console">Console</SelectItem>
+                        <SelectItem value="Accessory">Accessory</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="marketvalue">Market Value</Label>
+                    <Input id="marketvalue" name="marketvalue" type="number" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="price">Price</Label>
+                    <Input id="price" name="price" type="number" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="stockQuantity">Stock Quantity</Label>
+                    <Input id="stockQuantity" name="stockQuantity" type="number" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="locationId">Location ID</Label>
+                    <Input id="locationId" name="locationId" type="number" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="condition">Condition</Label>
+                    <Select name="condition" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="New">New</SelectItem>
+                        <SelectItem value="Used">Used</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="description">Description</Label>
+                    <Input id="description" name="description" required />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="imageUrl">Product Image</Label>
+                    <Input id="imageUrl" name="imageUrl" type="file" accept="image/*" />
+                  </div>
+                </ScrollArea>
+                <Button type="submit" className="mt-2">Add Product</Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+
     </Tabs>
   );
 }

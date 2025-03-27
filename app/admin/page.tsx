@@ -22,14 +22,12 @@ export default function AdminPage() {
   };
 
   return (
-    <div>
-      <div className="flex justify-end pt-20 pr-7">
-        <Button onClick={handleLogout}>Logout</Button>
+    <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <div className="pt-4 w-full max-w-4xl">
+        <AdminTab />
       </div>
-      <div className="flex w-full items-center justify-center p-6 md:p-10">
-        <div className="w-full max-w-sm">
-          <AdminTab />
-        </div>
+      <div className="mt-4">
+        <Button onClick={handleLogout}>Logout</Button>
       </div>
     </div>
   );
