@@ -16,11 +16,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { firstName, lastName, role, email, phoneNumber } = body;
+    const { firstName, lastName, email, phoneNumber } = body;
     const client = await pool.connect();
     const result = await client.query(
-      'INSERT INTO Employees (FirstName, LastName, Role, Email, PhoneNumber) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [firstName, lastName, role, email, phoneNumber || null]
+      'INSERT INTO customers (firstname, lastname, email, phonenumber) VALUES ($1, $2, $3, $4) RETURNING *',
+      [firstName, lastName, email, phoneNumber || null]
     );
     client.release();
     return NextResponse.json(result.rows[0], { status: 201 });

@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
           secure: false,
           auth: {
               user: '81da66002@smtp-brevo.com',
-              pass: 'xsmtpsib-d7ed8b1d0c2ab412f39c5727de4702624fd2311dd2cee44d4a7fbfc9e2ac036e-GCfFxKnrR2YZENAB' 
+              pass: '' 
           },
         });
   

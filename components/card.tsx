@@ -44,7 +44,7 @@ const Card = ({ product, onDelete }) => {
               <img
                 src={product.imageUrl}
                 alt={product.name}
-                className="w-full h-full object-cove rounded"
+                className="w-full h-full rounded"
               />
             </div>
             <div className="card-info">

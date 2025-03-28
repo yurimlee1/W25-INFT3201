@@ -85,7 +85,7 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  // Pass fetchLocations to AdminPage via onLocationAdded
+
   useEffect(() => {
     if (onLocationAdded) {
       onLocationAdded(fetchLocations);
@@ -267,12 +267,11 @@ export function AdminTab({ onLocationAdded }) {
 
   return (
     <Tabs defaultValue="inventory" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
         <TabsTrigger value="repair">Repair</TabsTrigger>
         <TabsTrigger value="employees">Employee</TabsTrigger>
         <TabsTrigger value="customers">Customer</TabsTrigger>
-        <TabsTrigger value="add">Add</TabsTrigger>
       </TabsList>
       <TabsContent value="inventory">
         <Card>

@@ -3,8 +3,6 @@ import React from "react";
 import Card from "@/components/card";
 import { useEffect, useState } from "react";
 
-
-
 interface Product {
   productid: number;
   name: string;

@@ -20,7 +20,6 @@ export default function AdminPage() {
   const [locationAddress, setLocationAddress] = useState("");
   const [refreshLocations, setRefreshLocations] = useState<() => void>(() => {});
 
-  // Memoize onLocationAdded
   const onLocationAdded = useCallback((fetchFn) => {
     setRefreshLocations(() => fetchFn);
   }, []);
