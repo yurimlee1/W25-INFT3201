@@ -3,8 +3,22 @@ import { OrderItem } from "@/components/order-item";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
+interface Product {
+  productid: number;
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  imageUrl: string;
+  category: string;  // Added category
+  condition: string;  // Added condition
+  marketvalue: number;  // Added marketvalue
+  stockquantity: number;  // Added stockquantity
+  locationid: number;  // Added locationid
+}
+
 export default function OrderPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,7 +88,7 @@ export default function OrderPage() {
               </div>
             </div>
             <Button type="submit" className="w-full mt-6">
-            Check out
+              Check out
             </Button>
           </div>
         </div>

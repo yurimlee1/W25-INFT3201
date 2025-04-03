@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminTab } from '@/components/admin-tab';
 import { Button } from '@/components/ui/button';
@@ -20,9 +20,10 @@ export default function AdminPage() {
   const [locationAddress, setLocationAddress] = useState("");
   const [refreshLocations, setRefreshLocations] = useState<() => void>(() => {});
 
-  const onLocationAdded = useCallback((fetchFn) => {
+  const onLocationAdded = useCallback((fetchFn: () => void) => {
     setRefreshLocations(() => fetchFn);
   }, []);
+  
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('loggedIn');
@@ -37,7 +38,7 @@ export default function AdminPage() {
     router.push('/signin');
   };
 
-  const handleAddLocation = async (event: any) => {
+  const handleAddLocation = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const response = await fetch("/api/locations", {

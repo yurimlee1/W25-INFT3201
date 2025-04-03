@@ -7,8 +7,8 @@ export async function POST(request: NextRequest) {
     const { username, password } = await request.json();
     const hashedPassword = await bcrypt.hash(password, 10);
     const client = await pool.connect();
-    const result = await client.query(
-      'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
+    await client.query(
+      'INSERT INTO users (username, password) VALUES ($1, $2)',
       [username, hashedPassword]
     );
     client.release();

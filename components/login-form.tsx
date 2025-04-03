@@ -24,27 +24,31 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     event.preventDefault();
     setIsLoading(true);
     setError("");
-
+  
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || "An error occurred during login");
       }
-
+  
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("username", data.user.username);
-
+  
       console.log("Login successful", data);
-      router.push("/admin"); // Redirect to /admin
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+      router.push("/admin");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Login failed");
+      }
     } finally {
       setIsLoading(false);
     }

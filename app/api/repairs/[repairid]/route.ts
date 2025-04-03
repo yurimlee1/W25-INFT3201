@@ -3,10 +3,10 @@ import pool from '@/lib/db';
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { repairid: string } }
+  context: { params: Promise<{ repairid: string }> } 
 ) {
   try {
-    const { repairid } = await Promise.resolve(context.params);
+    const { repairid } = await Promise.resolve(context.params); 
     const body = await request.json();
     const { repairstatus, assignedEmployeeId } = body;
     const client = await pool.connect();
@@ -32,30 +32,29 @@ export async function PATCH(
   }
 }
 
-
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ repairid: string }> } 
 ) {
   try {
     const awaitedParams = await Promise.resolve(context.params);
-    const { id } = awaitedParams;
+    const { repairid } = awaitedParams; 
     const client = await pool.connect();
 
     const deleteResult = await client.query(
       'DELETE FROM Repairs WHERE repairid = $1',
-      [id]
+      [repairid] 
     );
 
     client.release();
 
     if (deleteResult.rowCount === 0) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Repair not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
+    return NextResponse.json({ message: 'Repair deleted successfully' }, { status: 200 });
   } catch (error) {
-    console.error('Error deleting product:', error);
+    console.error('Error deleting repair:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

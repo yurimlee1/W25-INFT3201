@@ -1,46 +1,13 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect } from "react";
-import { Switch } from "./ui/switch";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { toast } from "sonner";
-
-
-interface Employee {
-  employeeid: number;
-  firstname: string;
-  lastname: string;
-  role: string;
-  email: string;
-  phonenumber: number;
-}
-
-interface Product {
-  productid: number;
-  name: string;
-  category: string;
-  condition: string;
-  marketvalue: number;
-  price: number;
-  stockquantity: number;
-  locationid: number;
-  description: string;
-  imageUrl: string;
-}
-
-interface Customer {
-  customerid: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phonenumber: number;
-}
 
 interface Location {
   locationid: number;
@@ -48,34 +15,28 @@ interface Location {
   address: string;
 }
 
-
 export function AddTab() {
-  const [products, setProducts] = useState<Product[]>([]);
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [locations, setLocations] = useState<Location[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [isToggled, setIsToggled] = useState(false);
+  const [locations, setLocations] = useState<Location[]>([]);
 
-    useEffect(() => {
-      fetchLocations();
-    }, []);
+  useEffect(() => {
+    fetchLocations();
+  }, []);
 
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch("/api/locations");
+      if (!response.ok) throw new Error("Failed to fetch locations");
+      const data = await response.json();
+      setLocations(data);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      toast.error("Failed to fetch locations");
+    }
+  };
 
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch("/api/locations");
-        if (!response.ok) throw new Error("Failed to fetch locations");
-        const data = await response.json();
-        setLocations(data);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-        toast.error("Failed to fetch locations");
-      }
-    };
-
-  const handleAddProduct = async (event: any) => {
+  const handleAddProduct = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.target as HTMLFormElement);
     try {
       const response = await fetch("/api/products", {
         method: "POST",
@@ -83,16 +44,16 @@ export function AddTab() {
       });
       if (!response.ok) throw new Error("Failed to add product");
       toast.success("Product added successfully");
-      event.target.reset();
+      (event.target as HTMLFormElement).reset(); // Ensure this is properly typed
     } catch (error) {
       console.error("Error adding product:", error);
       toast.error("Failed to add product");
     }
   };
-
-  const handleAddEmployee = async (event: any) => {
+  
+  const handleAddEmployee = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.target as HTMLFormElement); // Cast to HTMLFormElement
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -108,23 +69,23 @@ export function AddTab() {
       });
       if (!response.ok) throw new Error("Failed to add employee");
       toast.success("Employee added successfully");
-      event.target.reset();
+      (event.target as HTMLFormElement).reset(); // Reset the form after success
     } catch (error) {
       console.error("Error adding employee:", error);
       toast.error("Failed to add employee");
     }
   };
-
-  const handleAddCustomer = async (event: any) => {
+  
+  const handleAddCustomer = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.target as HTMLFormElement); // Cast to HTMLFormElement
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
       email: formData.get("email"),
       phoneNumber: formData.get("phoneNumber"),
     };
-    try{
+    try {
       const response = await fetch("/api/customers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -134,12 +95,14 @@ export function AddTab() {
         console.error("Error:", await response.json());
       }
       toast.success("Customer Added Successfully");
-
-    }catch (error) {
+    } catch (error) {
       console.error("Error adding customer:", error);
       toast.error("Failed to add customer");
     }
-  };
+  };  
+
+
+
 
   return (
     <Tabs defaultValue="inventory" className="w-[400px]">

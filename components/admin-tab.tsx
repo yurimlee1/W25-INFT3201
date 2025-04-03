@@ -11,6 +11,7 @@ import { Switch } from "./ui/switch";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { toast } from "sonner";
 
+// Define the types for the components
 interface Location {
   locationid: number;
   name: string;
@@ -56,7 +57,12 @@ interface Employee {
   phonenumber: number;
 }
 
-export function AdminTab({ onLocationAdded }) {
+// Define the props for AdminTab
+interface AdminTabProps {
+  onLocationAdded?: (fetchLocations: () => void) => void;
+}
+
+export function AdminTab({ onLocationAdded }: AdminTabProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [repairs, setRepairs] = useState<Repair[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -73,11 +79,11 @@ export function AdminTab({ onLocationAdded }) {
     fetchLocations();
   }, []);
 
-  const fetchLocations = async () => {
+  const fetchLocations = async (): Promise<void> => {
     try {
       const response = await fetch("/api/locations");
       if (!response.ok) throw new Error("Failed to fetch locations");
-      const data = await response.json();
+      const data: Location[] = await response.json();
       setLocations(data);
     } catch (error) {
       console.error("Error fetching locations:", error);
@@ -85,18 +91,18 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-
+  // If onLocationAdded is provided, call it with fetchLocations
   useEffect(() => {
     if (onLocationAdded) {
       onLocationAdded(fetchLocations);
     }
   }, [onLocationAdded]);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (): Promise<void> => {
     try {
       const response = await fetch("/api/products");
       if (!response.ok) throw new Error("Failed to fetch products");
-      const data = await response.json();
+      const data: Product[] = await response.json();
       setProducts(data);
       toast.success("Products fetched successfully");
     } catch (error) {
@@ -107,11 +113,11 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const fetchRepairs = async () => {
+  const fetchRepairs = async (): Promise<void> => {
     try {
       const response = await fetch("/api/repairs");
       if (!response.ok) throw new Error("Failed to fetch repairs");
-      const data = await response.json();
+      const data: Repair[] = await response.json();
       setRepairs(data);
       toast.success("Repairs fetched successfully");
     } catch (error) {
@@ -120,11 +126,11 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = async (): Promise<void> => {
     try {
       const response = await fetch("/api/employees");
       if (!response.ok) throw new Error("Failed to fetch employees");
-      const data = await response.json();
+      const data: Employee[] = await response.json();
       setEmployees(data);
       toast.success("Employees fetched successfully");
     } catch (error) {
@@ -133,11 +139,11 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (): Promise<void> => {
     try {
       const response = await fetch("/api/customers");
       if (!response.ok) throw new Error("Failed to fetch customers");
-      const data = await response.json();
+      const data: Customer[] = await response.json();
       setCustomers(data);
       toast.success("Customers fetched successfully");
     } catch (error) {
@@ -146,7 +152,7 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const handleDeleteInventory = async (id: number) => {
+  const handleDeleteInventory = async (id: number): Promise<void> => {
     try {
       const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
       if (response.status === 400) {
@@ -163,23 +169,7 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const handleDeleteRepair = async (id: number) => {
-    try {
-      const response = await fetch(`/api/repairs/${id}`, { method: "DELETE" });
-      if (response.status === 400) {
-        const data = await response.json();
-        toast.error(data.error);
-        return;
-      }
-      if (!response.ok) throw new Error("Failed to delete Repair Req ");
-      toast.success("Repair Req deleted successfully");
-    } catch (error) {
-      console.error("Error deleting Repair Req :", error);
-      toast.error("Failed to delete Repair Req ");
-    }
-  };
-
-  const handleStatusChange = async (repairId: number, newStatus: string) => {
+  const handleStatusChange = async (repairId: number, newStatus: string): Promise<void> => {
     try {
       const response = await fetch(`/api/repairs/${repairId}`, {
         method: "PATCH",
@@ -198,14 +188,14 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const handleAssignEmployee = async (repairId: number, employeeId: string) => {
+  const handleAssignEmployee = async (repairId: number, employeeId: number): Promise<void> => {
     try {
       const response = await fetch(`/api/repairs/${repairId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           repairstatus: repairs.find((r) => r.repairid === repairId)?.repairstatus,
-          assignedEmployeeId: parseInt(employeeId, 10),
+          assignedEmployeeId: employeeId,
         }),
       });
       if (!response.ok) throw new Error("Failed to assign employee");
@@ -220,50 +210,99 @@ export function AdminTab({ onLocationAdded }) {
     }
   };
 
-  const handleAddProduct = async (event: any) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    try {
-      const response = await fetch("/api/products", {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) throw new Error("Failed to add product");
-      toast.success("Product added successfully");
-      event.target.reset();
-      fetchProducts();
-      fetchLocations(); // Refresh locations in case new ones were added
-    } catch (error) {
-      console.error("Error adding product:", error);
-      toast.error("Failed to add product");
-    }
-  };
-
-  const handleAddEmployee = async (event: any) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const data = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      role: formData.get("role"),
-      email: formData.get("email"),
-      phoneNumber: formData.get("phoneNumber"),
+  const handleAddProduct = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();  // Prevent default form submission
+  
+    // Extract form data
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get('name') as string;
+    const category = formData.get('category') as string;
+    const marketvalue = parseFloat(formData.get('marketvalue') as string);
+    const price = parseFloat(formData.get('price') as string);
+    const stockQuantity = parseInt(formData.get('stockQuantity') as string, 10);
+    const locationId = parseInt(formData.get('locationId') as string, 10);
+    const condition = formData.get('condition') as string;
+    const description = formData.get('description') as string;
+    const imageUrl = formData.get('imageUrl') as File;
+  
+    // Create a new product object
+    const newProduct = {
+      name,
+      category,
+      marketvalue,
+      price,
+      stockquantity: stockQuantity,
+      locationid: locationId,
+      condition,
+      description,
+      imageUrl,
     };
+  
+    // Make the API call to add the product
     try {
-      const response = await fetch("/api/employees", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProduct),
       });
-      if (!response.ok) throw new Error("Failed to add employee");
-      toast.success("Employee added successfully");
-      event.target.reset();
-      fetchEmployees();
+  
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+  
+      // Optionally, update state or show a success message
+      toast.success('Product added successfully');
+      fetchProducts();  // Refresh product list after adding the new product
     } catch (error) {
-      console.error("Error adding employee:", error);
-      toast.error("Failed to add employee");
+      console.error('Error adding product:', error);
+      toast.error('Failed to add product');
     }
   };
+  
+
+  const handleAddEmployee = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();  // Prevent default form submission
+  
+    // Extract form data
+    const formData = new FormData(event.currentTarget);
+    const firstName = formData.get('firstName') as string;
+    const lastName = formData.get('lastName') as string;
+    const role = formData.get('role') as string;
+    const email = formData.get('email') as string;
+    const phoneNumber = formData.get('phoneNumber') as string;
+  
+    // Create an employee object
+    const newEmployee = {
+      firstname: firstName,
+      lastname: lastName,
+      role,
+      email,
+      phonenumber: phoneNumber,
+    };
+  
+    // Make the API call to add the employee
+    try {
+      const response = await fetch('/api/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEmployee),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add employee');
+      }
+  
+      // Optionally, update state or show a success message
+      toast.success('Employee added successfully');
+      fetchEmployees();  // Refresh employee list after adding the new employee
+    } catch (error) {
+      console.error('Error adding employee:', error);
+      toast.error('Failed to add employee');
+    }
+  };
+  
+
+
 
   return (
     <Tabs defaultValue="inventory" className="w-full">
@@ -352,7 +391,7 @@ export function AdminTab({ onLocationAdded }) {
                         <strong>Assign Employee:</strong>
                         <Select
                           value={repair.assignedEmployeeId?.toString() || ""}
-                          onValueChange={(value) => handleAssignEmployee(repair.repairid, value)}
+                          onValueChange={(value) => handleAssignEmployee(repair.repairid, parseInt(value, 10))}  // Convert value to number
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select employee" />
@@ -361,13 +400,14 @@ export function AdminTab({ onLocationAdded }) {
                             {employees.map((employee) => (
                               <SelectItem
                                 key={employee.employeeid}
-                                value={employee.employeeid.toString()}
+                                value={employee.employeeid.toString()}  // Value remains as string for Select
                               >
                                 {employee.firstname} {employee.lastname}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
+
                       </div>
                     </div>
                   );

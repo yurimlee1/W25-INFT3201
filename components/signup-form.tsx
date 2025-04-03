@@ -43,8 +43,12 @@ export function Signupform({
         throw new Error(data.message || 'An error occurred during registration');
       }
       console.log('Sign up successful', data);
-    } catch (err: any) {
-      setError(err.message || 'Sign up failed');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Sign up failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -63,10 +67,10 @@ export function Signupform({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="username">username</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
-                  type="username"
+                  type="text" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -83,10 +87,11 @@ export function Signupform({
                 />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Sign Up
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Signing up..." : "Sign Up"}
                 </Button>
               </div>
+              {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
@@ -98,5 +103,5 @@ export function Signupform({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

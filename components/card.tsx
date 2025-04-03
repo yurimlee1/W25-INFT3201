@@ -1,11 +1,9 @@
-"use client";
 import React from "react";
 import styled from "styled-components";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -13,17 +11,33 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
+// Define the TypeScript interface for the product prop
+interface Product {
+  productid: string;  // Or number, depending on your actual type
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  condition: string;
+  stockquantity: number;
+  locationid: number;
+  marketvalue: number;
+  imageUrl: string;
+}
 
-const Card = ({ product, onDelete }) => {
+interface CardProps {
+  product: Product;
+}
+
+const Card: React.FC<CardProps> = ({ product }) => {
   const addToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (!cart.includes(product.productid)) {
       cart.push(product.productid);
       localStorage.setItem("cart", JSON.stringify(cart));
       toast.success("Added to cart");
-    }else{
+    } else {
       toast.success("Already in cart");
-
     }
   };
 
@@ -93,7 +107,6 @@ const Card = ({ product, onDelete }) => {
     </StyledWrapper>
   );
 };
-
 
 const StyledWrapper = styled.div`
   .card {

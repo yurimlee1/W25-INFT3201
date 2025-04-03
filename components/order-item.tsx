@@ -1,7 +1,28 @@
 import React from "react";
 import { toast } from "sonner";
 
-export const OrderItem = ({ product }) => {
+// Define the Product interface (can be shared across multiple components)
+export interface Product {
+  productid: number;
+  name: string;
+  category: string;
+  condition: string;
+  marketvalue: number;
+  price: number;
+  stockquantity: number;
+  locationid: number;
+  description: string;  // Added description
+  imageUrl: string;     // Added imageUrl
+}
+
+
+
+// Define the type for the props of OrderItem component
+interface OrderItemProps {
+  product: Product;
+}
+
+export const OrderItem = ({ product }: OrderItemProps) => {
   return (
     <div>
       <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
@@ -45,13 +66,11 @@ export const OrderItem = ({ product }) => {
                 className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
                 onClick={() => {
                   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-                  cart = cart.filter(item => item !== product.productid);
+                    cart = cart.filter((item: number) => item !== product.productid);
                   localStorage.setItem('cart', JSON.stringify(cart));
                   window.location.reload();
 
                   toast.success("Product removed from cart");
-
-
                 }}
               >
                 <path
@@ -67,3 +86,4 @@ export const OrderItem = ({ product }) => {
     </div>
   );
 };
+

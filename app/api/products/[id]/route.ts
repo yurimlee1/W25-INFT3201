@@ -3,11 +3,10 @@ import pool from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  {params}: {params: Promise<{ id: string }>}
 ) {
   try {
-    const awaitedParams = await Promise.resolve(context.params);
-    const { id } = awaitedParams;
+    const { id } = await params;
     const client = await pool.connect();
     const result = await client.query(
       'SELECT * FROM Products WHERE productid = $1',
@@ -27,24 +26,20 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  {params}: {params: Promise<{ id: string }>}
 ) {
   try {
-    const awaitedParams = await Promise.resolve(context.params);
-    const { id } = awaitedParams;
+    const { id } = await params; 
     const client = await pool.connect();
-
     const deleteResult = await client.query(
       'DELETE FROM Products WHERE productid = $1',
       [id]
     );
-
     client.release();
 
     if (deleteResult.rowCount === 0) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
-
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('Error deleting product:', error);
